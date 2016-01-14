@@ -21,7 +21,7 @@ class Execution extends Plugin
     public function handle(Context $context, callable $chain = null)
     {
         // expect valid invokable
-        if(!$context->resource instanceof Invokable) {
+        if(!$context->invokable instanceof Invokable) {
             throw new \RuntimeException('Context::invokable must be a valid Colorium\Runtime\Invokable instance');
         }
 
