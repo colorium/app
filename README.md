@@ -1,1 +1,5 @@
-# Colorium App Component
+# Colorium app builder
+
+## Install
+
+`composer require colorium/app`
