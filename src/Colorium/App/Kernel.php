@@ -77,7 +77,6 @@ class Kernel extends Plugin implements Handler
     {
         $context = $context ?: $this->context;
         $context = $this->handle($context);
-        $context->response->send();
 
         return $context;
     }

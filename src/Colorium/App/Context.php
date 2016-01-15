@@ -80,6 +80,17 @@ class Context extends \stdClass
 
 
     /**
+     * Terminate context
+     *
+     * @return string
+     */
+    public function end()
+    {
+        return $this->response->send();
+    }
+
+
+    /**
      * Generate redirect response
      *
      * @param string $uri

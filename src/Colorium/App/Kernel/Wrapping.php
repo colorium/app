@@ -29,10 +29,6 @@ class Wrapping extends Plugin
     public function __construct(LoggerInterface $logger = null)
     {
         $this->logger = $logger ?: new NullLogger;
-
-        set_error_handler(function($message, $severity, $file, $line) {
-            throw new \ErrorException($message, 0, $severity, $file, $line);
-        });
     }
 
 

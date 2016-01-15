@@ -34,6 +34,21 @@ class Templating extends Plugin
     public function setup()
     {
         $this->app->templater = &$this->templater;
+        $context = &$this->app->context;
+
+        // add url helper
+        $this->templater->helpers['url'] = function(...$parts) use($context)
+        {
+            $path = ltrim(implode('/', $parts));
+            return $context->request->uri->make($path);
+        };
+
+        // add call helper
+        $this->templater->helpers['url'] = function(...$parts) use($context)
+        {
+            $path = ltrim(implode('/', $parts));
+            return $context->request->uri->make($path);
+        };
     }
 
 
@@ -47,13 +62,6 @@ class Templating extends Plugin
     public function handle(Context $context, callable $chain = null)
     {
         $context = $chain($context);
-
-        // add template uri helper
-        $this->templater->helpers['url'] = function(...$parts) use($context)
-        {
-            $path = ltrim(implode('/', $parts));
-            return $context->request->uri->make($path);
-        };
 
         // expect valid response
         if(!$context->response instanceof Response) {

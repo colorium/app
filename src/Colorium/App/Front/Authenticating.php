@@ -21,14 +21,20 @@ class Authenticating extends Plugin
      */
     public function handle(Context $context, callable $chain = null)
     {
-        $rank = $context->invokable->annotation('access') ?: 0;
-        if($rank) {
-            if(Auth::rank() < $rank) {
-                throw new Error\Unauthorized;
-            }
+        // init auth context
+        $context->auth = new \stdClass;
 
-            $context->rank = Auth::rank();
+        // retrieve user
+        if($ref = Auth::ref()) {
+            $context->auth->rank = Auth::rank();
+            $context->auth->ref = $ref;
             $context->user = Auth::user();
+        }
+
+        // access rank needed
+        $rank = $context->invokable->annotation('access') ?: 0;
+        if($rank and $context->auth->rank < $rank) {
+            throw new Error\Unauthorized;
         }
 
         return $chain($context);
