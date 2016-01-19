@@ -8,23 +8,23 @@ use Colorium\Http\Request;
 use Colorium\Http\Response;
 use Colorium\Http\Error;
 use Colorium\Templating\Engine;
-use Colorium\Templating\Html;
+use Colorium\Templating\Renderer;
 
 class Templating extends Plugin
 {
 
-    /** @var Engine */
+    /** @var Renderer */
     protected $templater;
 
 
     /**
      * Create templating component
      *
-     * @param Engine $templater
+     * @param Renderer $templater
      */
-    public function __construct(Engine $templater = null)
+    public function __construct(Renderer $templater = null)
     {
-        $this->templater = $templater ?: new Html;
+        $this->templater = $templater ?: new Engine;
     }
 
 
@@ -34,20 +34,18 @@ class Templating extends Plugin
     public function setup()
     {
         $this->app->templater = &$this->templater;
-        $context = &$this->app->context;
 
         // add url helper
-        $this->templater->helpers['url'] = function(...$parts) use($context)
+        $this->templater->helpers['url'] = function(...$parts)
         {
             $path = ltrim(implode('/', $parts));
-            return $context->request->uri->make($path);
+            return $this->app->context->request->uri->make($path);
         };
 
         // add call helper
-        $this->templater->helpers['url'] = function(...$parts) use($context)
+        $this->templater->helpers['call'] = function($resource, ...$params)
         {
-            $path = ltrim(implode('/', $parts));
-            return $context->request->uri->make($path);
+            return $this->app->forward($resource, ...$params);
         };
     }
 
