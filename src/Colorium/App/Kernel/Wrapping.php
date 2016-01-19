@@ -73,7 +73,7 @@ class Wrapping extends Plugin
             $this->logger->error($e->getMessage());
             if($this->prod) {
                 foreach($this->events as $class => $resource) {
-                    if($e instanceof $class) {
+                    if(is_string($class) and $e instanceof $class) {
                         return $this->app->forward($resource, $context);
                     }
                 }
