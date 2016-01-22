@@ -2,7 +2,7 @@
 
 namespace Colorium\App;
 
-abstract class Plugin extends \stdClass implements Handler
+abstract class Plugin implements Contract\HandlerInterface
 {
 
     /** @var Kernel */

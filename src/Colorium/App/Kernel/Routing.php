@@ -2,29 +2,27 @@
 
 namespace Colorium\App\Kernel;
 
-
-
 use Colorium\App\Context;
 use Colorium\App\Plugin;
 use Colorium\Http\Response;
-use Colorium\Http\Error;
-use Colorium\Routing\Routable;
+use Colorium\Http\Error\NotFoundException;
+use Colorium\Routing\Contract\RouterInterface;
 use Colorium\Routing\Router;
 use Colorium\Runtime;
 
 class Routing extends Plugin
 {
 
-    /** @var Routable */
+    /** @var RouterInterface */
     protected $router;
 
 
     /**
      * Create router component
      *
-     * @param Routable $router
+     * @param RouterInterface $router
      */
-    public function __construct(Routable $router = null)
+    public function __construct(RouterInterface $router = null)
     {
         $this->router = $router ?: new Router;
     }
@@ -35,7 +33,7 @@ class Routing extends Plugin
      */
     public function setup()
     {
-        $this->app->router = &$this->router;
+        $this->app->config->router = &$this->router;
     }
 
 
@@ -46,7 +44,7 @@ class Routing extends Plugin
      * @param callable $chain
      * @return Response
      *
-     * @throws Error\NotFound
+     * @throws NotFoundException
      */
     public function handle(Context $context, callable $chain = null)
     {
@@ -61,7 +59,7 @@ class Routing extends Plugin
             $query = $context->request->method . ' ' . $context->request->uri->path;
             $route = $this->router->find($query);
             if(!$route) {
-                throw new Error\NotFound('No route corresponding to query ' . $query);
+                throw new NotFoundException('No route corresponding to query ' . $query);
             }
 
             $context->route = $route;

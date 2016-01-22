@@ -2,7 +2,7 @@
 
 namespace Colorium\App;
 
-use Colorium\Routing\Routable;
+use Colorium\Routing\Contract\RouterInterface;
 
 class Rest extends Kernel
 {
@@ -10,12 +10,12 @@ class Rest extends Kernel
     /**
      * Rest app constructor
      *
-     * @param Routable $router
+     * @param RouterInterface $router
      */
-    public function __construct(Routable $router = null)
+    public function __construct(RouterInterface $router = null)
     {
         parent::__construct(
-            new Kernel\Wrapping,
+            new Kernel\Catching,
             new Kernel\Routing($router),
             new Kernel\Rendering
         );
@@ -31,7 +31,7 @@ class Rest extends Kernel
      */
     public function on($query, $resource)
     {
-        $this->router->add($query, $resource);
+        $this->config->router->add($query, $resource);
         return $this;
     }
 
@@ -45,7 +45,7 @@ class Rest extends Kernel
      */
     public function when($event, $resource)
     {
-        $this->events[$event] = $resource;
+        $this->config->events[$event] = $resource;
         return $this;
     }
 

@@ -70,12 +70,12 @@ class Context extends \stdClass
      *
      * @return Context
      */
-    public function child()
+    public function sub()
     {
-        $child = clone $this;
-        $child->parent = $this;
+        $sub = clone $this;
+        $sub->parent = $this;
 
-        return $this;
+        return $sub;
     }
 
 

@@ -2,8 +2,8 @@
 
 namespace Colorium\App;
 
-use Colorium\Routing\Routable;
-use Colorium\Templating\Engine;
+use Colorium\Routing\Contract\RouterInterface;
+use Colorium\Templating\Contract\TemplaterInterface;
 
 class Front extends Kernel
 {
@@ -11,13 +11,13 @@ class Front extends Kernel
     /**
      * Front app constructor
      *
-     * @param Routable $router
-     * @param Engine $templater
+     * @param RouterInterface $router
+     * @param TemplaterInterface $templater
      */
-    public function __construct(Routable $router = null, Engine $templater = null)
+    public function __construct(RouterInterface $router = null, TemplaterInterface $templater = null)
     {
         parent::__construct(
-            new Kernel\Wrapping,
+            new Kernel\Catching,
             new Kernel\Routing($router),
             new Front\Authenticating,
             new Front\Templating($templater)
@@ -34,7 +34,24 @@ class Front extends Kernel
      */
     public function on($query, $resource)
     {
-        $this->router->add($query, $resource);
+        $this->config->router->add($query, $resource);
+
+        return $this;
+    }
+
+
+    /**
+     * Set multiple routes
+     *
+     * @param array $routes
+     * @return $this
+     */
+    public function routes(array $routes)
+    {
+        foreach($routes as $query => $resource) {
+            $this->config->router->add($query, $resource);
+        }
+
         return $this;
     }
 
@@ -48,7 +65,21 @@ class Front extends Kernel
      */
     public function when($event, $resource)
     {
-        $this->events[$event] = $resource;
+        $this->config->events[$event] = $resource;
+        return $this;
+    }
+
+
+    /**
+     * Set multiple error fallback
+     *
+     * @param array $events
+     * @return $this
+     */
+    public function events(array $events)
+    {
+        $this->config->events = array_merge($this->config->events, $events);
+
         return $this;
     }
 

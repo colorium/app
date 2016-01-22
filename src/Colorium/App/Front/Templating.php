@@ -7,24 +7,24 @@ use Colorium\App\Plugin;
 use Colorium\Http\Request;
 use Colorium\Http\Response;
 use Colorium\Http\Error;
-use Colorium\Templating\Engine;
-use Colorium\Templating\Renderer;
+use Colorium\Templating\Contract\TemplaterInterface;
+use Colorium\Templating\Templater;
 
 class Templating extends Plugin
 {
 
-    /** @var Renderer */
+    /** @var TemplaterInterface */
     protected $templater;
 
 
     /**
      * Create templating component
      *
-     * @param Renderer $templater
+     * @param TemplaterInterface $templater
      */
-    public function __construct(Renderer $templater = null)
+    public function __construct(TemplaterInterface $templater = null)
     {
-        $this->templater = $templater ?: new Engine;
+        $this->templater = $templater ?: new Templater;
     }
 
 
@@ -33,7 +33,7 @@ class Templating extends Plugin
      */
     public function setup()
     {
-        $this->app->templater = &$this->templater;
+        $this->app->config->templater = &$this->templater;
 
         // add url helper
         $this->templater->helpers['url'] = function(...$parts)

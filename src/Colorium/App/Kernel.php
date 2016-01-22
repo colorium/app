@@ -4,8 +4,11 @@ namespace Colorium\App;
 
 use Colorium\Http;
 
-class Kernel extends Plugin implements Handler
+class Kernel extends Plugin
 {
+
+    /** @var \stdClass */
+    public $config;
 
     /** @var Context */
     public $context;
@@ -21,6 +24,8 @@ class Kernel extends Plugin implements Handler
      */
     public function __construct(Plugin ...$plugins)
     {
+        $this->config = new \stdClass;
+
         $request = Http\Request::current();
         $response = new Http\Response;
         $this->context = new Context($request, $response);
@@ -61,9 +66,7 @@ class Kernel extends Plugin implements Handler
         $stack = reset($this->plugins);
         $context = call_user_func($stack, $context);
 
-        return $chain
-            ? $chain($context)
-            : $context;
+        return $chain ? $chain($context) : $context;
     }
 
 
@@ -75,15 +78,17 @@ class Kernel extends Plugin implements Handler
      */
     public function run(Context $context = null)
     {
-        $context = $context ?: $this->context;
-        $context = $this->handle($context);
+        if($context) {
+            $this->context = $context;
+        }
+        $context = $this->handle($this->context);
 
         return $context;
     }
 
 
     /**
-     * Forward directly to invokable
+     * Forward directly to resource
      *
      * @param $resource
      * @param ...$params
@@ -91,7 +96,7 @@ class Kernel extends Plugin implements Handler
      */
     public function forward($resource, ...$params)
     {
-        $context = $this->context->child();
+        $context = $this->context->sub();
         $context->forward = [$resource, $params];
         $context->invokable = null;
 

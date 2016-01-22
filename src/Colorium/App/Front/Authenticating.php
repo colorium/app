@@ -4,7 +4,7 @@ namespace Colorium\App\Front;
 
 use Colorium\App\Context;
 use Colorium\App\Plugin;
-use Colorium\Http\Error;
+use Colorium\Http\Error\UnauthorizedException;
 use Colorium\Stateful\Auth;
 
 class Authenticating extends Plugin
@@ -17,7 +17,7 @@ class Authenticating extends Plugin
      * @param callable $chain
      * @return Context
      *
-     * @throws Error\Unauthorized
+     * @throws UnauthorizedException
      */
     public function handle(Context $context, callable $chain = null)
     {
@@ -34,7 +34,7 @@ class Authenticating extends Plugin
         // access rank needed
         $rank = $context->invokable->annotation('access') ?: 0;
         if($rank and $context->auth->rank < $rank) {
-            throw new Error\Unauthorized;
+            throw new UnauthorizedException;
         }
 
         return $chain($context);

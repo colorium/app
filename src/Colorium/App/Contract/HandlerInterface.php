@@ -1,8 +1,10 @@
 <?php
 
-namespace Colorium\App;
+namespace Colorium\App\Contract;
 
-interface Handler
+use Colorium\App\Context;
+
+interface HandlerInterface
 {
 
     /**
