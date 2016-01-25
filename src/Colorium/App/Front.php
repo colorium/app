@@ -78,7 +78,7 @@ class Front extends Kernel
      */
     public function events(array $events)
     {
-        $this->config->events = array_merge($this->config->events, $events);
+        $this->config->events = $events + $this->config->events;
 
         return $this;
     }
