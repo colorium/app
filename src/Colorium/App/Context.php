@@ -56,12 +56,23 @@ class Context extends \stdClass
     /**
      * Get post value
      *
-     * @param string $key
+     * @param string $keys
      * @return string
      */
-    public function post($key)
+    public function post(...$keys)
     {
-        return $this->request->value($key);
+        if(!$keys) {
+            return $this->request->values;
+        }
+        elseif(count($keys) === 1) {
+            return $this->request->value($keys[0]);
+        }
+
+        $values = [];
+        foreach($keys as $key) {
+            $values[] = $this->request->value($key);
+        }
+        return $values;
     }
 
 

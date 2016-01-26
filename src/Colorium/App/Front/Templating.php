@@ -47,6 +47,9 @@ class Templating extends Plugin
         {
             return $this->app->forward($resource, ...$params);
         };
+
+        // add context
+        $this->templater->vars['self'] = $this->app->context;
     }
 
 
