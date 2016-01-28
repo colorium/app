@@ -1,9 +1,11 @@
 <?php
 
-namespace Colorium\App\Kernel;
+namespace Colorium\App\Plugin;
 
 use Colorium\App\Context;
+use Colorium\App\Kernel;
 use Colorium\App\Plugin;
+use Colorium\Http\Error\NotImplementedException;
 use Colorium\Http\Response;
 use Colorium\Http\Error\NotFoundException;
 use Colorium\Routing\Contract\RouterInterface;
@@ -29,11 +31,13 @@ class Routing extends Plugin
 
 
     /**
-     * Setup router
+     * Bind to app
+     *
+     * @param Kernel $app
      */
-    public function setup()
+    public function bind(Kernel &$app)
     {
-        $this->app->config->router = &$this->router;
+        $app->router = &$this->router;
     }
 
 
@@ -76,12 +80,14 @@ class Routing extends Plugin
      * @param callable $resource
      * @param array $params
      * @return Runtime\Invokable
+     *
+     * @throws NotImplementedException
      */
     protected function resolve($resource, array $params = [])
     {
         $invokable = Runtime\Resolver::of($resource);
         if(!$invokable) {
-            throw new \RuntimeException('callable is not a valid resolvable invokable');
+            throw new NotImplementedException;
         }
 
         $invokable->params = $params;

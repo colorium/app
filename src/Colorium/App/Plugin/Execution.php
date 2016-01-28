@@ -1,6 +1,6 @@
 <?php
 
-namespace Colorium\App\Kernel;
+namespace Colorium\App\Plugin;
 
 use Colorium\App\Context;
 use Colorium\App\Plugin;
@@ -9,7 +9,6 @@ use Colorium\Runtime\Invokable;
 
 class Execution extends Plugin
 {
-
 
     /**
      * Handle context

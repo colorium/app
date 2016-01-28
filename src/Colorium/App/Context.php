@@ -18,11 +18,17 @@ class Context extends \stdClass
     /** @var Runtime\Invokable */
     public $invokable;
 
+    /** @var Plugin\Firewall\Access */
+    public $access;
+
     /** @var Http\Response */
     public $response;
 
-    /** @var Context */
-    public $parent;
+    /** @var array */
+    public $forward = [];
+
+    /** @var callable */
+    public $handler;
 
 
     /**
@@ -30,13 +36,11 @@ class Context extends \stdClass
      *
      * @param Http\Request $request
      * @param Http\Response $response
-     * @param Context $parent
      */
-    public function __construct(Http\Request $request, Http\Response $response, Context $parent = null)
+    public function __construct(Http\Request $request, Http\Response $response)
     {
         $this->request = $request;
         $this->response = $response;
-        $this->parent = $parent;
     }
 
 
@@ -56,7 +60,7 @@ class Context extends \stdClass
     /**
      * Get post value
      *
-     * @param string $keys
+     * @param array $keys
      * @return string
      */
     public function post(...$keys)
@@ -77,16 +81,19 @@ class Context extends \stdClass
 
 
     /**
-     * Create sub-context
+     * Forward context
      *
+     * @param $resource
+     * @param ...$params
      * @return Context
      */
-    public function sub()
+    public function forward($resource, ...$params)
     {
-        $sub = clone $this;
-        $sub->parent = $this;
+        $context = clone $this;
+        $context->forward = [$resource, $params];
+        $context->invokable = null;
 
-        return $sub;
+        return call_user_func($this->handler, $context);
     }
 
 

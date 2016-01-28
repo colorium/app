@@ -1,8 +1,9 @@
 <?php
 
-namespace Colorium\App\Kernel;
+namespace Colorium\App\Plugin;
 
 use Colorium\App\Context;
+use Colorium\App\Kernel;
 use Colorium\App\Plugin;
 use Colorium\Http\Error\HttpException;
 use Psr\Log\LoggerInterface;
@@ -33,13 +34,15 @@ class Catching extends Plugin
 
 
     /**
-     * Setup catching
+     * Bind to app
+     *
+     * @param Kernel $app
      */
-    public function setup()
+    public function bind(Kernel &$app)
     {
-        $this->app->config->logger = &$this->logger;
-        $this->app->config->events = &$this->events;
-        $this->app->config->catch = &$this->catch;
+        $app->logger = &$this->logger;
+        $app->events = &$this->events;
+        $app->catch = &$this->catch;
     }
 
 
@@ -82,7 +85,7 @@ class Catching extends Plugin
             // find class event
             foreach($this->events as $class => $resource) {
                 if(is_string($class) and $e instanceof $class) {
-                    return $this->app->forward($resource, $context, $e);
+                    return $context->forward($resource, $context, $e);
                 }
             }
 
@@ -118,7 +121,7 @@ class Catching extends Plugin
             // find code event
             if(isset($this->events[$code])) {
                 $resource = $this->events[$code];
-                return $this->app->forward($resource, $context, $e);
+                return $context->forward($resource, $context, $e);
             }
 
             // uncaught, re-throw (and caught by catchGlobal)

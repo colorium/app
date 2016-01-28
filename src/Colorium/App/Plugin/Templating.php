@@ -1,8 +1,9 @@
 <?php
 
-namespace Colorium\App\Front;
+namespace Colorium\App\Plugin;
 
 use Colorium\App\Context;
+use Colorium\App\Kernel;
 use Colorium\App\Plugin;
 use Colorium\Http\Request;
 use Colorium\Http\Response;
@@ -29,27 +30,33 @@ class Templating extends Plugin
 
 
     /**
-     * Setup templater
+     * Bind to app
+     *
+     * @param Kernel $app
      */
-    public function setup()
+    public function bind(Kernel &$app)
     {
-        $this->app->config->templater = &$this->templater;
+        $app->templater = &$this->templater;
+    }
 
-        // add url helper
-        $this->templater->helpers['url'] = function(...$parts)
-        {
+
+    /**
+     * Setup plugin using context
+     *
+     * @param Context $context
+     */
+    public function setup(Context $context)
+    {
+        $this->templater->vars['self'] = $context;
+
+        $this->templater->helpers['url'] = function(...$parts) use($context) {
             $path = ltrim(implode('/', $parts));
-            return $this->app->context->request->uri->make($path);
+            return $context->request->uri->make($path);
         };
 
-        // add call helper
-        $this->templater->helpers['call'] = function($resource, ...$params)
-        {
-            return $this->app->forward($resource, ...$params);
+        $this->templater->helpers['call'] = function($resource, ...$params) use($context) {
+            return $context->forward($resource, ...$params);
         };
-
-        // add context
-        $this->templater->vars['self'] = $this->app->context;
     }
 
 

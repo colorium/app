@@ -1,6 +1,6 @@
 <?php
 
-namespace Colorium\App\Kernel;
+namespace Colorium\App\Plugin;
 
 use Colorium\App\Context;
 use Colorium\App\Plugin;
@@ -10,7 +10,6 @@ use Colorium\Http\Error;
 
 class Rendering extends Plugin
 {
-
 
     /**
      * Handle request/response

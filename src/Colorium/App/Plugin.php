@@ -2,39 +2,21 @@
 
 namespace Colorium\App;
 
-abstract class Plugin implements Contract\HandlerInterface
+abstract class Plugin implements Contract\PluginInterface
 {
 
-    /** @var Kernel */
-    protected $app;
-
-
     /**
-     * Bind kernel to plugin
+     * Bind to app
      *
      * @param Kernel $app
-     * @return $this
      */
-    public function bind(Kernel &$app)
-    {
-        $this->app = $app;
-        return $this;
-    }
-
+    public function bind(Kernel &$app) {}
 
     /**
-     * User setup
-     */
-    public function setup() {}
-
-
-    /**
-     * Handle app context
+     * Setup plugin using context
      *
      * @param Context $context
-     * @param callable $chain
-     * @return Context
      */
-    abstract public function handle(Context $context, callable $chain = null);
+    public function setup(Context $context) {}
 
 }

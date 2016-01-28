@@ -15,9 +15,9 @@ class Rest extends Kernel
     public function __construct(RouterInterface $router = null)
     {
         parent::__construct(
-            new Kernel\Catching,
-            new Kernel\Routing($router),
-            new Kernel\Rendering
+            new Plugin\Catching,
+            new Plugin\Routing($router),
+            new Plugin\Rendering
         );
     }
 
@@ -31,7 +31,7 @@ class Rest extends Kernel
      */
     public function on($query, $resource)
     {
-        $this->config->router->add($query, $resource);
+        $this->router->add($query, $resource);
 
         return $this;
     }
@@ -46,7 +46,7 @@ class Rest extends Kernel
     public function routes(array $routes)
     {
         foreach($routes as $query => $resource) {
-            $this->config->router->add($query, $resource);
+            $this->router->add($query, $resource);
         }
 
         return $this;
@@ -62,7 +62,7 @@ class Rest extends Kernel
      */
     public function when($event, $resource)
     {
-        $this->config->events[$event] = $resource;
+        $this->events[$event] = $resource;
         return $this;
     }
 
@@ -75,7 +75,7 @@ class Rest extends Kernel
      */
     public function events(array $events)
     {
-        $this->config->events = $events + $this->config->events;
+        $this->events = $events + $this->config->events;
 
         return $this;
     }

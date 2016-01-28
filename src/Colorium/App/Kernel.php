@@ -3,54 +3,29 @@
 namespace Colorium\App;
 
 use Colorium\Http;
+use Colorium\Runtime;
+use Colorium\App\Contract\PluginInterface;
+use Colorium\App\Contract\HandlerInterface;
 
-class Kernel extends Plugin
+class Kernel extends \stdClass implements HandlerInterface
 {
 
-    /** @var \stdClass */
-    public $config;
-
-    /** @var Context */
-    public $context;
-
-    /** @var callable[] */
+    /** @var PluginInterface[] */
     protected $plugins = [];
 
 
     /**
      * Kernel constructor
      *
-     * @param Plugin ...$plugins
+     * @param PluginInterface $plugins
      */
-    public function __construct(Plugin ...$plugins)
+    public function __construct(PluginInterface ...$plugins)
     {
-        $this->config = new \stdClass;
-
-        $request = Http\Request::current();
-        $response = new Http\Response;
-        $this->context = new Context($request, $response);
-
-        $plugins[] = new Kernel\Execution;
-        $plugins = array_reverse($plugins);
-        foreach($plugins as $plugin) {
-            $this->plug($plugin);
+        $this->plugins = $plugins;
+        $this->plugins[] = new Plugin\Execution;
+        foreach($this->plugins as $plugin) {
+            $plugin->bind($this);
         }
-    }
-
-
-    /**
-     * Attach plugin
-     *
-     * @param Plugin $plugin
-     */
-    protected function plug(Plugin $plugin)
-    {
-        $chain = reset($this->plugins) ?: null;
-        $plugin->bind($this)->setup();
-        $callable = function(Context $context) use($plugin, $chain) {
-            return $plugin->handle($context, $chain);
-        };
-        array_unshift($this->plugins, $callable);
     }
 
 
@@ -58,15 +33,30 @@ class Kernel extends Plugin
      * Handle app context
      *
      * @param Context $context
-     * @param callable $chain
      * @return Context
      */
-    public function handle(Context $context, callable $chain = null)
+    public function handle(Context $context)
     {
-        $stack = reset($this->plugins);
-        $context = call_user_func($stack, $context);
+        // setup plugins
+        $context->handler = [$this, 'handle'];
+        foreach($this->plugins as $plugin) {
+            $plugin->setup($context);
+        }
 
-        return $chain ? $chain($context) : $context;
+        // stack plugins
+        $stack = [];
+        $plugins = array_reverse($this->plugins);
+        foreach($plugins as $plugin) {
+            $chain = end($stack) ?: null;
+            $stack[] = function(Context $context) use($plugin, $chain) {
+                return $plugin->handle($context, $chain);
+            };
+        }
+
+        // trigger chain
+        $stack = array_reverse($stack);
+        $first = reset($stack);
+        return call_user_func($first, $context);
     }
 
 
@@ -78,29 +68,24 @@ class Kernel extends Plugin
      */
     public function run(Context $context = null)
     {
-        if($context) {
-            $this->context = $context;
-        }
-        $context = $this->handle($this->context);
+        $context = $context ?: static::context();
+        $context = $this->handle($context);
 
         return $context;
     }
 
 
     /**
-     * Forward directly to resource
+     * Generate context
      *
-     * @param $resource
-     * @param ...$params
      * @return Context
      */
-    public function forward($resource, ...$params)
+    public static function context()
     {
-        $context = $this->context->sub();
-        $context->forward = [$resource, $params];
-        $context->invokable = null;
+        $request = Http\Request::current();
+        $response = new Http\Response;
 
-        return $this->run($context);
+        return new Context($request, $response);
     }
 
 }

@@ -2,6 +2,7 @@
 
 namespace Colorium\App;
 
+use Colorium\Http;
 use Colorium\Routing\Contract\RouterInterface;
 use Colorium\Templating\Contract\TemplaterInterface;
 
@@ -17,10 +18,10 @@ class Front extends Kernel
     public function __construct(RouterInterface $router = null, TemplaterInterface $templater = null)
     {
         parent::__construct(
-            new Kernel\Catching,
-            new Kernel\Routing($router),
-            new Front\Authenticating,
-            new Front\Templating($templater)
+            new Plugin\Catching,
+            new Plugin\Routing($router),
+            new Plugin\Firewall,
+            new Plugin\Templating($templater)
         );
     }
 
@@ -34,7 +35,7 @@ class Front extends Kernel
      */
     public function on($query, $resource)
     {
-        $this->config->router->add($query, $resource);
+        $this->router->add($query, $resource);
 
         return $this;
     }
@@ -49,7 +50,7 @@ class Front extends Kernel
     public function routes(array $routes)
     {
         foreach($routes as $query => $resource) {
-            $this->config->router->add($query, $resource);
+            $this->router->add($query, $resource);
         }
 
         return $this;
@@ -65,7 +66,7 @@ class Front extends Kernel
      */
     public function when($event, $resource)
     {
-        $this->config->events[$event] = $resource;
+        $this->events[$event] = $resource;
         return $this;
     }
 
@@ -78,7 +79,7 @@ class Front extends Kernel
      */
     public function events(array $events)
     {
-        $this->config->events = $events + $this->config->events;
+        $this->events = $events + $this->events;
 
         return $this;
     }
