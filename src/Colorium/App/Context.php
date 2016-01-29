@@ -130,7 +130,7 @@ class Context extends \stdClass
      * @param array $headers
      * @return Http\Response\Json
      */
-    public static function json($content, $code = 302, array $headers = [])
+    public static function json($content, $code = 200, array $headers = [])
     {
         return new Http\Response\Json($content, $code, $headers);
     }
