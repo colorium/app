@@ -107,47 +107,4 @@ class Context extends \stdClass
         return $this->response->send();
     }
 
-
-    /**
-     * Generate redirect response
-     *
-     * @param string $uri
-     * @param int $code
-     * @param array $headers
-     * @return Http\Response\Redirect
-     */
-    public static function redirect($uri, $code = 302, array $headers = [])
-    {
-        return new Http\Response\Redirect($uri, $code, $headers);
-    }
-
-
-    /**
-     * Generate json response
-     *
-     * @param $content
-     * @param int $code
-     * @param array $headers
-     * @return Http\Response\Json
-     */
-    public static function json($content, $code = 200, array $headers = [])
-    {
-        return new Http\Response\Json($content, $code, $headers);
-    }
-
-
-    /**
-     * Generate template response
-     *
-     * @param string $template
-     * @param array $vars
-     * @param int $code
-     * @param array $headers
-     * @return Http\Response\Template
-     */
-    public static function template($template, array $vars = [], $code = 200, array $headers = [])
-    {
-        return new Http\Response\Template($template, $vars, $code, $headers);
-    }
-
 }
