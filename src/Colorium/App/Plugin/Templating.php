@@ -69,6 +69,7 @@ class Templating extends Plugin
      */
     public function handle(Context $context, callable $chain = null)
     {
+        $context->templater = $this->templater;
         $context = $chain($context);
 
         // expect valid response
