@@ -23,6 +23,7 @@
   "autoload": {
     "psr-4": {
       "Colorium\\App\\": "/src/Colorium/App/"
-    }
+    },
+    "files": ["files/debug_helpers.php"]
   }
 }
