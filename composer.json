@@ -18,7 +18,8 @@
     "colorium/routing": "dev-master",
     "colorium/stateful": "dev-master",
     "colorium/templating": "dev-master",
-    "colorium/runtime": "dev-master"
+    "colorium/runtime": "dev-master",
+    "colorium/text": "dev-master"
   },
   "autoload": {
     "psr-4": {

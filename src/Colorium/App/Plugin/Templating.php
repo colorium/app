@@ -10,6 +10,7 @@ use Colorium\Http\Response;
 use Colorium\Http\Error;
 use Colorium\Templating\Contract\TemplaterInterface;
 use Colorium\Templating\Templater;
+use Colorium\Text\Lang;
 
 class Templating extends Plugin
 {
@@ -57,6 +58,11 @@ class Templating extends Plugin
         $this->templater->helpers['call'] = function($resource, ...$params) use($context) {
             return $context->forward($resource, ...$params);
         };
+
+        $this->templater->helpers['lang'] = function($key, array $params = []) {
+            return Lang::get($key, $params);
+        };
+        $this->templater->helpers['_'] = $this->templater->helpers['lang']; // alias
     }
 
 
