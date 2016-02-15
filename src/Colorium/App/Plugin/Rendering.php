@@ -31,7 +31,7 @@ class Rendering extends Plugin
             $context->response->uri = $context->request->uri->make($context->response->uri);
         }
         // render default as json
-        elseif($context->response->raw) {
+        elseif($context->response->raw and !$context->request->cli) {
             $context->response = new Response\Json($context->response->content, $context->response->code);
         }
 

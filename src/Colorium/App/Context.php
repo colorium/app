@@ -58,6 +58,19 @@ class Context extends \stdClass
 
 
     /**
+     * Return authentified user
+     *
+     * @return object
+     */
+    public function user()
+    {
+        return isset($this->access->user)
+            ? $this->access->user
+            : null;
+    }
+
+
+    /**
      * Get post value
      *
      * @param array $keys
@@ -81,17 +94,37 @@ class Context extends \stdClass
 
 
     /**
+     * Set forward instruction
+     *
+     * @param callable $resource
+     * @param ...$params
+     * @return $this
+     */
+    public function resource($resource, ...$params)
+    {
+        $this->forward = [$resource, $params];
+
+        return $this;
+    }
+
+
+    /**
      * Forward context
      *
-     * @param $resource
+     * @param callable $resource
      * @param ...$params
      * @return Context
      */
-    public function forward($resource, ...$params)
+    public function forward($resource = null, ...$params)
     {
+        // sub context
         $context = clone $this;
-        $context->forward = [$resource, $params];
-        $context->invokable = null;
+        if($resource) {
+            $context->resource($resource, ...$params);
+        }
+
+        // clean master context
+        $this->forward = null;
 
         return call_user_func($this->handler, $context);
     }

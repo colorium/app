@@ -85,7 +85,7 @@ class Templating extends Plugin
             $context->response->uri = $context->request->uri->make($context->response->uri);
         }
         // render default as template or json
-        elseif($context->response->raw) {
+        elseif($context->response->raw and !$context->request->cli) {
             // render template
             if($template = $context->invokable->annotation('html')) {
                 $content = $this->templater->render($template, (array)$context->response->content);
