@@ -47,7 +47,7 @@ class Templating extends Plugin
      */
     public function setup(Context $context)
     {
-        $this->templater->vars['self'] = $context;
+        $this->templater->vars['ctx'] = $context;
 
         $this->templater->helpers['url'] = function(...$parts) use($context) {
             $path = ltrim(implode('/', $parts));
