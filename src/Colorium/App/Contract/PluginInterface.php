@@ -16,13 +16,6 @@ interface PluginInterface extends HandlerInterface
     public function bind(Kernel &$app);
 
     /**
-     * Setup plugin using context
-     *
-     * @param Context $context
-     */
-    public function setup(Context $context);
-
-    /**
      * Handle context
      *
      * @param Context $context

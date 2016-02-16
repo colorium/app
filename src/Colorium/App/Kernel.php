@@ -21,8 +21,8 @@ class Kernel extends \stdClass implements HandlerInterface
      */
     public function __construct(PluginInterface ...$plugins)
     {
-        $this->plugins = $plugins;
-        $this->plugins[] = new Plugin\Execution;
+        $plugins[] = new Plugin\Execution;
+        $this->plugins = array_reverse($plugins);
         foreach($this->plugins as $plugin) {
             $plugin->bind($this);
         }
@@ -37,24 +37,16 @@ class Kernel extends \stdClass implements HandlerInterface
      */
     public function handle(Context $context)
     {
-        // setup plugins
-        $context->handler = [$this, 'handle'];
-        foreach($this->plugins as $plugin) {
-            $plugin->setup($context);
-        }
-
         // stack plugins
         $stack = [];
-        $plugins = array_reverse($this->plugins);
-        foreach($plugins as $plugin) {
+        foreach($this->plugins as $plugin) {
             $chain = end($stack) ?: null;
-            $stack[] = function(Context $context) use($plugin, $chain) {
+            array_unshift($stack, function(Context $context) use($plugin, $chain) {
                 return $plugin->handle($context, $chain);
-            };
+            });
         }
 
         // trigger chain
-        $stack = array_reverse($stack);
         $first = reset($stack);
         return call_user_func($first, $context);
     }

@@ -41,12 +41,17 @@ class Templating extends Plugin
 
 
     /**
-     * Setup plugin using context
+     * Handle request/response
      *
      * @param Context $context
+     * @param callable $chain
+     * @return Response
      */
-    public function setup(Context $context)
+    public function handle(Context $context, callable $chain = null)
     {
+        // setup
+        $context->templater = $this->templater;
+
         $this->templater->vars['ctx'] = $context;
 
         $this->templater->helpers['url'] = function(...$parts) use($context) {
@@ -57,19 +62,8 @@ class Templating extends Plugin
         $this->templater->helpers['call'] = function($resource, ...$params) use($context) {
             return $context->forward($resource, ...$params);
         };
-    }
 
-
-    /**
-     * Handle request/response
-     *
-     * @param Context $context
-     * @param callable $chain
-     * @return Response
-     */
-    public function handle(Context $context, callable $chain = null)
-    {
-        $context->templater = $this->templater;
+        // execute chain
         $context = $chain($context);
 
         // expect valid response

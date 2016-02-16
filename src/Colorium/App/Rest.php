@@ -17,23 +17,9 @@ class Rest extends Kernel
         parent::__construct(
             new Plugin\Catching,
             new Plugin\Routing($router),
+            new Plugin\Firewall,
             new Plugin\Rendering
         );
-    }
-
-
-    /**
-     * Set route
-     *
-     * @param string $query
-     * @param callable $resource
-     * @return $this
-     */
-    public function on($query, $resource)
-    {
-        $this->router->add($query, $resource);
-
-        return $this;
     }
 
 
@@ -49,20 +35,6 @@ class Rest extends Kernel
             $this->router->add($query, $resource);
         }
 
-        return $this;
-    }
-
-
-    /**
-     * Set error fallback
-     *
-     * @param string $event
-     * @param callable $resource
-     * @return $this
-     */
-    public function when($event, $resource)
-    {
-        $this->events[$event] = $resource;
         return $this;
     }
 

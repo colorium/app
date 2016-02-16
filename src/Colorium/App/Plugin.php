@@ -12,11 +12,4 @@ abstract class Plugin implements Contract\PluginInterface
      */
     public function bind(Kernel &$app) {}
 
-    /**
-     * Setup plugin using context
-     *
-     * @param Context $context
-     */
-    public function setup(Context $context) {}
-
 }
